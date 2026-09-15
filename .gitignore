@@ -114,3 +114,6 @@ ehthumbs.db
 .directory
 *.pyo
 *.pyd
+
+# ---- Alembic local artifacts ----
+backend/alembic.ini.bak

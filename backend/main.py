@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.core.database import engine, Base
 from app.middleware.audit_log_middleware import audit_log_middleware
 from app.api import (
     auth_router,
@@ -26,8 +25,8 @@ from app.api import (
     api_docs_router
 )
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Schema is managed by Alembic migrations (see backend/alembic) - run
+# `alembic upgrade head` instead of relying on create_all here.
 
 app = FastAPI(
     title="CRM API",
