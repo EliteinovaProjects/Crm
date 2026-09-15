@@ -8,6 +8,7 @@ import { Settings } from './pages/Settings'
 import { AdminDashboard } from './pages/admin/AdminDashboard'
 import { EmployeeDashboard } from './pages/employee/EmployeeDashboard'
 import { LeadsList } from './pages/leads/LeadsList'
+import { LiveCalls } from './pages/calls/LiveCalls'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -32,7 +33,7 @@ export default function App() {
             }
           >
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/live-calls" element={<PagePlaceholder title="Live Calls" />} />
+            <Route path="/admin/live-calls" element={<LiveCalls />} />
             <Route path="/admin/agents" element={<PagePlaceholder title="Agents" />} />
             <Route path="/admin/leads" element={<LeadsList />} />
             <Route path="/admin/reports" element={<PagePlaceholder title="Reports" />} />
@@ -47,7 +48,7 @@ export default function App() {
             }
           >
             <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-            <Route path="/employee/live-calls" element={<PagePlaceholder title="Live Calls" />} />
+            <Route path="/employee/live-calls" element={<LiveCalls />} />
             <Route path="/employee/agents" element={<PagePlaceholder title="Agents" />} />
             <Route path="/employee/leads" element={<LeadsList />} />
             <Route path="/employee/reports" element={<PagePlaceholder title="Reports" />} />

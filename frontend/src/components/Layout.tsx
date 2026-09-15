@@ -2,11 +2,13 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { adminNav, employeeNav } from '../config/sidebar'
 import { BellIcon, PhoneIcon } from './icons'
+import { DialPad } from './DialPad'
 
 export function Layout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const nav = user?.role === 'employee' ? employeeNav : adminNav
+  const liveCallsPath = user?.role === 'employee' ? '/employee/live-calls' : '/admin/live-calls'
 
   function handleLogout() {
     logout()
@@ -120,7 +122,8 @@ export function Layout() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <div
+            <button
+              onClick={() => navigate(liveCallsPath)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -131,13 +134,15 @@ export function Layout() {
                 borderRadius: 999,
                 fontSize: 13,
                 fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
               <PhoneIcon width={15} height={15} />
               Live Calls
               <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 8px', borderRadius: 999 }}>0</span>
               <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 8px', borderRadius: 999 }}>0</span>
-            </div>
+            </button>
             <div style={{ position: 'relative', color: 'var(--text-muted)' }}>
               <BellIcon />
               <span
@@ -192,6 +197,8 @@ export function Layout() {
           <Outlet />
         </main>
       </div>
+
+      <DialPad />
     </div>
   )
 }
