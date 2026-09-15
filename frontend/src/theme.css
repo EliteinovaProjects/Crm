@@ -1,0 +1,31 @@
+:root {
+  --brand-pink: #ec4899;
+  --brand-purple: #a855f7;
+  --brand-gradient: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  --brand-gradient-soft: linear-gradient(135deg, rgba(236, 72, 153, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+  --bg-app: #f6f5fb;
+  --bg-card: #ffffff;
+  --text-main: #1f2033;
+  --text-muted: #8b8ba7;
+  --border-soft: #eee9f7;
+  --sidebar-bg: #ffffff;
+  --sidebar-active-bg: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --shadow-card: 0 2px 12px rgba(120, 60, 160, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-app);
+  color: var(--text-main);
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+}
+
+button {
+  font-family: inherit;
+}
