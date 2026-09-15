@@ -1,7 +1,15 @@
 import axios from 'axios'
 
+// In development we use the Vite proxy (`/api` -> http://localhost:8000).
+// In production (Vercel) point directly at the deployed backend service by
+// setting the VITE_API_URL environment variable, e.g.
+//   VITE_API_URL=https://crm-backend-xxxx.vercel.app
+// If VITE_API_URL is not set we fall back to the same-origin `/api` prefix,
+// which works when Vercel routes `/api/*` to the backend service.
+const rawBaseUrl = import.meta.env.VITE_API_URL as string | undefined
+
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: rawBaseUrl ? rawBaseUrl.replace(/\/+$/, '') : '/api',
 })
 
 api.interceptors.request.use((config) => {
