@@ -42,7 +42,7 @@ export function Layout() {
             marginBottom: 28,
           }}
         >
-          D
+          E
         </div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
           {nav.map((item) => {
@@ -102,14 +102,14 @@ export function Layout() {
                 fontSize: 13,
               }}
             >
-              D
+              E
             </div>
             <div>
               <div style={{ fontWeight: 800, fontSize: 15 }}>
-                DAFFY<span style={{ color: '#ec4899' }}>TEL</span>
+                ELITEINOVA <span style={{ color: '#ec4899' }}>CRM</span>
               </div>
               <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: 0.5 }}>
-                CALL | CONNECT | COLLABORATE
+                CRM PORTAL 
               </div>
             </div>
           </div>

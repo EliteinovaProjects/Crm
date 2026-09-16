@@ -81,14 +81,14 @@ export function Login() {
                   fontWeight: 800,
                 }}
               >
-                D
+                E
               </div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: 20, letterSpacing: 0.5 }}>
-                  DAFFY<span style={{ color: '#ec4899' }}>TEL</span>
+                  ELITEINOVA <span style={{ color: '#ec4899' }}>CRM</span>
                 </div>
                 <div style={{ fontSize: 10, color: '#7a5f8f', letterSpacing: 1 }}>
-                  CALL | CONNECT | COLLABORATE
+                  CRM PORTAL
                 </div>
               </div>
             </div>
