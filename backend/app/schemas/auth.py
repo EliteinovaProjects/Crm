@@ -36,6 +36,7 @@ class UserResponse(UserBase):
 class LoginRequest(BaseModel):
     username: str
     password: str
+    portal: Optional[str] = None  # admin or employee
 
 
 class LoginResponse(BaseModel):

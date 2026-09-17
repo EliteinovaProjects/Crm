@@ -9,6 +9,7 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [loginType, setLoginType] = useState<'admin' | 'employee'>('admin')
   const [error, setError] = useState('')
+  const [portalMismatch, setPortalMismatch] = useState<{ role: 'admin' | 'employee'; message: string } | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const { login, user } = useAuth()
   const navigate = useNavigate()
@@ -21,16 +22,17 @@ export function Login() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
+    setPortalMismatch(null)
     setSubmitting(true)
     try {
-      await login(username, password)
+      await login(username, password, loginType)
       // The redirect is based on the role returned by the backend.
     } catch (err: any) {
-      const returnedRole = err?.response?.data?.user?.role
-      if (returnedRole && returnedRole !== loginType) {
-        setError(`These credentials belong to the ${returnedRole === 'employee' ? 'Employee' : 'Admin'} login.`)
+      const detail = err?.response?.data?.detail
+      if (detail?.code === 'wrong_portal') {
+        setPortalMismatch({ role: detail.role === 'employee' ? 'employee' : 'admin', message: detail.message })
       } else {
-        setError('Invalid username or password')
+        setError(typeof detail === 'string' ? detail : 'Invalid username or password')
       }
     } finally {
       setSubmitting(false)
@@ -248,6 +250,19 @@ export function Login() {
           </form>
         </div>
       </div>
+
+      {portalMismatch && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.68)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20, padding: 20 }}>
+          <div role="dialog" aria-modal="true" style={{ width: '100%', maxWidth: 390, background: '#111a2e', color: '#fff', borderRadius: 16, borderTop: '4px solid #f59e0b', padding: 28, boxShadow: '0 24px 70px rgba(0,0,0,.35)', textAlign: 'center' }}>
+            <div style={{ width: 58, height: 58, margin: '0 auto 16px', borderRadius: 16, background: 'rgba(245,158,11,.12)', display: 'grid', placeItems: 'center', fontSize: 30 }}>⚠</div>
+            <h3 style={{ margin: '0 0 10px', fontSize: 20 }}>Wrong Login Portal</h3>
+            <p style={{ margin: '0 auto 20px', color: '#cbd5e1', lineHeight: 1.6, fontSize: 13 }}>{portalMismatch.message}</p>
+            <div style={{ textAlign: 'left', padding: 14, border: '1px solid rgba(245,158,11,.35)', borderRadius: 12, background: 'rgba(245,158,11,.08)', marginBottom: 16 }}><strong style={{ color: '#fbbf24', fontSize: 11 }}>RECOMMENDED</strong><div style={{ marginTop: 4, fontWeight: 700 }}>{portalMismatch.role === 'employee' ? 'Employee Login' : 'Admin Login'}</div></div>
+            <button onClick={() => { setLoginType(portalMismatch.role); setPortalMismatch(null); setError('') }} style={{ width: '100%', padding: 12, border: 0, borderRadius: 10, background: '#d8890b', color: '#fff', fontWeight: 700, cursor: 'pointer', marginBottom: 8 }}>Switch to {portalMismatch.role === 'employee' ? 'Employee' : 'Admin'} Login</button>
+            <button onClick={() => setPortalMismatch(null)} style={{ width: '100%', padding: 12, border: '1px solid #334155', borderRadius: 10, background: 'transparent', color: '#cbd5e1', fontWeight: 600, cursor: 'pointer' }}>Stay on Current Login</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

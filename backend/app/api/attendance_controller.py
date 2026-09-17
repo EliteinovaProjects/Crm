@@ -42,7 +42,9 @@ def quick_check_in(
     """Quick check in for work (simplified version for header button)"""
     from datetime import datetime
     
-    if current_user.current_status == "online":
+    # Existing users may have NULL status values from before attendance was added.
+    current_status = current_user.current_status or "offline"
+    if current_status in ("online", "on_break"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Already checked in"
@@ -71,7 +73,8 @@ def quick_check_out(
     """Quick check out from work (simplified version for header button)"""
     from datetime import datetime
     
-    if current_user.current_status == "offline":
+    current_status = current_user.current_status or "offline"
+    if current_status == "offline":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Already checked out"

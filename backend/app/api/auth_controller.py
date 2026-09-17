@@ -21,6 +21,16 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
             detail="Invalid username or password"
         )
     
+    if login_data.portal and result["user"]["role"] not in (["employee"] if login_data.portal == "employee" else ["admin", "sub_admin"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "wrong_portal",
+                "role": result["user"]["role"],
+                "message": f"This account is registered as an {result['user']['role'].replace('_', ' ').title()}. Please use the correct login.",
+            },
+        )
+
     return result
 
 
