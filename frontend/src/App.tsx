@@ -9,6 +9,7 @@ import { AdminDashboard } from './pages/admin/AdminDashboard'
 import { EmployeeDashboard } from './pages/employee/EmployeeDashboard'
 import { LeadsList } from './pages/leads/LeadsList'
 import { LiveCalls } from './pages/calls/LiveCalls'
+import { ConfigurationPage } from './pages/ConfigurationPage'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -34,9 +35,18 @@ export default function App() {
           >
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/live-calls" element={<LiveCalls />} />
-            <Route path="/admin/agents" element={<PagePlaceholder title="Agents" />} />
             <Route path="/admin/leads" element={<LeadsList />} />
             <Route path="/admin/reports" element={<PagePlaceholder title="Reports" />} />
+            <Route path="/admin/fields" element={<ConfigurationPage kind="fields" />} />
+            <Route path="/admin/sources" element={<ConfigurationPage kind="sources" />} />
+            <Route path="/admin/statuses" element={<ConfigurationPage kind="statuses" />} />
+            <Route path="/admin/categories" element={<ConfigurationPage kind="categories" />} />
+            <Route path="/admin/sms-templates" element={<ConfigurationPage kind="sms-templates" />} />
+            <Route path="/admin/api-docs" element={<ConfigurationPage kind="api-docs" />} />
+            <Route path="/admin/agents" element={<ConfigurationPage kind="agents" />} />
+            <Route path="/admin/toolbox/*" element={<Settings />} />
+            <Route path="/admin/c2c/*" element={<Settings />} />
+            <Route path="/admin/coins/*" element={<Settings />} />
             <Route path="/admin/settings/*" element={<Settings />} />
           </Route>
 
@@ -52,6 +62,9 @@ export default function App() {
             <Route path="/employee/agents" element={<PagePlaceholder title="Agents" />} />
             <Route path="/employee/leads" element={<LeadsList />} />
             <Route path="/employee/reports" element={<PagePlaceholder title="Reports" />} />
+            <Route path="/employee/reminders/*" element={<Settings />} />
+            <Route path="/employee/campaign-base" element={<PagePlaceholder title="Campaign Base" />} />
+            <Route path="/employee/coins/*" element={<Settings />} />
             <Route path="/employee/settings/*" element={<Settings />} />
           </Route>
 

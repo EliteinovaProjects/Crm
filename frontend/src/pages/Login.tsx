@@ -144,6 +144,8 @@ export function Login() {
                 onClick={() => {
                   setLoginType(type)
                   setError('')
+                  setUsername('')
+                  setPassword('')
                 }}
                 style={{
                   flex: 1,
@@ -192,6 +194,7 @@ export function Login() {
                 style={{ border: 'none', outline: 'none', flex: 1, fontSize: 14 }}
               />
             </div>
+
 
             <div
               style={{

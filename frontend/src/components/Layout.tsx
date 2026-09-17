@@ -12,6 +12,11 @@ export function Layout() {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [updatingAttendance, setUpdatingAttendance] = useState(false)
+  const [attendanceError, setAttendanceError] = useState('')
+  const [workspace, setWorkspace] = useState<'lms' | 'cms'>(() => {
+    const saved = sessionStorage.getItem('crm_workspace')
+    return saved === 'cms' ? 'cms' : 'lms'
+  })
   const profileMenuRef = useRef<HTMLDivElement>(null)
   const notificationRef = useRef<HTMLDivElement>(null)
   const isEmployee = user?.role === 'employee'
@@ -45,7 +50,8 @@ export function Layout() {
       await api.post('/attendance/quick-check-in')
       // Reload the authenticated user so the header reflects the new status.
       window.location.reload()
-    } catch (error) {
+    } catch (error: any) {
+      setAttendanceError(error?.response?.data?.detail || 'Check-in failed. Please try again.')
       console.error('Check-in failed:', error)
     } finally {
       setUpdatingAttendance(false)
@@ -58,7 +64,8 @@ export function Layout() {
     try {
       await api.post('/attendance/quick-check-out')
       window.location.reload()
-    } catch (error) {
+    } catch (error: any) {
+      setAttendanceError(error?.response?.data?.detail || 'Check-out failed. Please try again.')
       console.error('Check-out failed:', error)
     } finally {
       setUpdatingAttendance(false)
@@ -75,7 +82,8 @@ export function Layout() {
         await api.post('/attendance/quick-break-start')
       }
       window.location.reload()
-    } catch (error) {
+    } catch (error: any) {
+      setAttendanceError(error?.response?.data?.detail || 'Break update failed. Please try again.')
       console.error('Break toggle failed:', error)
     } finally {
       setUpdatingAttendance(false)
@@ -111,11 +119,16 @@ export function Layout() {
         >
           E
         </div>
+        <div style={{ display: 'flex', gap: 4, padding: '0 8px 12px', width: '100%', boxSizing: 'border-box' }}>
+          {(['lms', 'cms'] as const).map((section) => (
+            <button key={section} onClick={() => { setWorkspace(section); sessionStorage.setItem('crm_workspace', section) }} style={{ flex: 1, border: 0, borderRadius: 6, padding: '6px 2px', cursor: 'pointer', fontSize: 9, fontWeight: 800, letterSpacing: 0.6, textTransform: 'uppercase', color: workspace === section ? '#fff' : '#8b8ba7', background: workspace === section ? 'var(--brand-gradient)' : 'transparent' }}>{section}</button>
+          ))}
+        </div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
           <div style={{ padding: '0 14px 4px', color: '#a09ab0', fontSize: 9, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase' }}>
-            LMS
+            {workspace.toUpperCase()}
           </div>
-          {lmsNav.map((item) => {
+          {(workspace === 'lms' ? lmsNav : cmsNav).map((item) => {
             const Icon = item.icon
             return (
               <NavLink
@@ -134,28 +147,7 @@ export function Layout() {
               </NavLink>
             )
           })}
-          <div style={{ padding: '10px 14px 4px', color: '#a09ab0', fontSize: 9, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase' }}>
-            CMS
-          </div>
-          {cmsNav.map((item) => {
-            const Icon = item.icon
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                style={({ isActive }) => ({
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                  padding: '10px 4px', margin: '0 10px', borderRadius: 12,
-                  textDecoration: 'none', color: isActive ? '#fff' : '#8b8ba7',
-                  background: isActive ? 'var(--brand-gradient)' : 'transparent',
-                  fontSize: 10.5, fontWeight: 600, textAlign: 'center',
-                })}
-              >
-                <Icon width={19} height={19} />
-                <span>{item.label}</span>
-              </NavLink>
-            )
-          })}
+
         </nav>
       </aside>
 
@@ -213,8 +205,9 @@ export function Layout() {
                 <div>
                   Check-out: <strong style={{ color: 'var(--text-main)' }}>{user.last_check_out ? new Date(user.last_check_out).toLocaleTimeString() : '--:--'}</strong>
                 </div>
+                {attendanceError && <span style={{ color: '#e05252', fontSize: 10 }}>{attendanceError}</span>}
                 <button
-                  onClick={user.current_status === 'online' ? handleCheckOut : handleCheckIn}
+                  onClick={() => { setAttendanceError(''); (user.current_status === 'online' ? handleCheckOut : handleCheckIn)() }}
                   disabled={updatingAttendance}
                   style={{
                     background: user.current_status === 'online' ? '#ef4444' : '#22c55e',
