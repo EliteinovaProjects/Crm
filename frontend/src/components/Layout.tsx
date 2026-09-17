@@ -1,18 +1,85 @@
+import { useState, useEffect, useRef } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { adminNav, employeeNav } from '../config/sidebar'
-import { BellIcon, PhoneIcon } from './icons'
+import { BellIcon, PhoneIcon, UserIcon, LogOutIcon, SettingsIcon } from './icons'
 import { DialPad } from './DialPad'
+import { api } from '../services/api'
 
 export function Layout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [updatingAttendance, setUpdatingAttendance] = useState(false)
+  const profileMenuRef = useRef<HTMLDivElement>(null)
+  const notificationRef = useRef<HTMLDivElement>(null)
   const nav = user?.role === 'employee' ? employeeNav : adminNav
   const liveCallsPath = user?.role === 'employee' ? '/employee/live-calls' : '/admin/live-calls'
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setShowProfileMenu(false)
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   function handleLogout() {
     logout()
     navigate('/login')
+  }
+
+  async function handleCheckIn() {
+    if (updatingAttendance) return
+    setUpdatingAttendance(true)
+    try {
+      await api.post('/attendance/quick-check-in')
+      // Refresh user data to get updated status
+      const response = await api.get('/auth/me')
+      // Update user in auth context (you might need to add a method to AuthContext for this)
+      window.location.reload()
+    } catch (error) {
+      console.error('Check-in failed:', error)
+    } finally {
+      setUpdatingAttendance(false)
+    }
+  }
+
+  async function handleCheckOut() {
+    if (updatingAttendance) return
+    setUpdatingAttendance(true)
+    try {
+      await api.post('/attendance/quick-check-out')
+      window.location.reload()
+    } catch (error) {
+      console.error('Check-out failed:', error)
+    } finally {
+      setUpdatingAttendance(false)
+    }
+  }
+
+  async function handleBreakToggle() {
+    if (updatingAttendance) return
+    setUpdatingAttendance(true)
+    try {
+      if (user?.is_on_break) {
+        await api.post('/attendance/quick-break-end')
+      } else {
+        await api.post('/attendance/quick-break-start')
+      }
+      window.location.reload()
+    } catch (error) {
+      console.error('Break toggle failed:', error)
+    } finally {
+      setUpdatingAttendance(false)
+    }
   }
 
   return (
@@ -119,6 +186,52 @@ export function Layout() {
               Active IVR Number: <strong style={{ color: 'var(--text-main)' }}>9940200578</strong>
             </div>
             <div>Account Expires On: 30 Nov 2026 05:46:19</div>
+            
+            {/* Employee Check-in/Check-out and Break Section */}
+            {user?.role === 'employee' && (
+              <div style={{ marginTop: 8, display: 'flex', gap: 12, alignItems: 'center' }}>
+                <div>
+                  Check-in: <strong style={{ color: 'var(--text-main)' }}>{user.last_check_in ? new Date(user.last_check_in).toLocaleTimeString() : '--:--'}</strong>
+                </div>
+                <div>
+                  Check-out: <strong style={{ color: 'var(--text-main)' }}>{user.last_check_out ? new Date(user.last_check_out).toLocaleTimeString() : '--:--'}</strong>
+                </div>
+                <button
+                  onClick={user.current_status === 'online' ? handleCheckOut : handleCheckIn}
+                  disabled={updatingAttendance}
+                  style={{
+                    background: user.current_status === 'online' ? '#ef4444' : '#22c55e',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '4px 12px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    cursor: updatingAttendance ? 'default' : 'pointer',
+                    opacity: updatingAttendance ? 0.7 : 1,
+                  }}
+                >
+                  {updatingAttendance ? 'Processing...' : (user.current_status === 'online' ? 'Check Out' : 'Check In')}
+                </button>
+                <button
+                  onClick={handleBreakToggle}
+                  disabled={updatingAttendance}
+                  style={{
+                    background: user.is_on_break ? '#f59e0b' : '#6b7280',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '4px 12px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    cursor: updatingAttendance ? 'default' : 'pointer',
+                    opacity: updatingAttendance ? 0.7 : 1,
+                  }}
+                >
+                  {updatingAttendance ? 'Processing...' : (user.is_on_break ? 'End Break' : 'Take Break')}
+                </button>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
@@ -143,52 +256,171 @@ export function Layout() {
               <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 8px', borderRadius: 999 }}>0</span>
               <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 8px', borderRadius: 999 }}>0</span>
             </button>
-            <div style={{ position: 'relative', color: 'var(--text-muted)' }}>
-              <BellIcon />
-              <span
-                style={{
-                  position: 'absolute',
-                  top: -2,
-                  right: -2,
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  background: '#ec4899',
-                }}
-              />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: '50%',
-                  background: 'var(--brand-gradient)',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
-              >
-                {(user?.full_name || user?.username || '?').slice(0, 1).toUpperCase()}
-              </div>
-              <span style={{ fontSize: 13, fontWeight: 600 }}>{user?.full_name || user?.username}</span>
+            
+            {/* Notification Button */}
+            <div ref={notificationRef} style={{ position: 'relative' }}>
               <button
-                onClick={handleLogout}
+                onClick={() => setShowNotifications(!showNotifications)}
                 style={{
                   background: 'none',
-                  border: '1px solid var(--border-soft)',
-                  borderRadius: 8,
-                  padding: '6px 12px',
-                  fontSize: 12,
+                  border: 'none',
                   cursor: 'pointer',
                   color: 'var(--text-muted)',
+                  padding: 4,
+                  borderRadius: 8,
                 }}
               >
-                Sign Out
+                <BellIcon />
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: -2,
+                    right: -2,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: '#ec4899',
+                  }}
+                />
               </button>
+              
+              {showNotifications && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: '100%',
+                    marginTop: 8,
+                    width: 280,
+                    background: '#fff',
+                    borderRadius: 12,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                    border: '1px solid var(--border-soft)',
+                    zIndex: 1000,
+                    padding: 16,
+                  }}
+                >
+                  <div style={{ fontWeight: 600, marginBottom: 12, fontSize: 14 }}>Notifications</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: 20 }}>
+                    No new notifications
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Profile Menu */}
+            <div ref={profileMenuRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 4,
+                  borderRadius: 8,
+                }}
+              >
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: '50%',
+                    background: 'var(--brand-gradient)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 13,
+                    fontWeight: 700,
+                  }}
+                >
+                  {(user?.full_name || user?.username || '?').slice(0, 1).toUpperCase()}
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>{user?.full_name || user?.username}</span>
+              </button>
+              
+              {showProfileMenu && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: '100%',
+                    marginTop: 8,
+                    width: 200,
+                    background: '#fff',
+                    borderRadius: 12,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                    border: '1px solid var(--border-soft)',
+                    zIndex: 1000,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: '12px 16px',
+                      borderBottom: '1px solid var(--border-soft)',
+                      fontSize: 13,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {user?.full_name || user?.username}
+                  </div>
+                  <div
+                    style={{
+                      padding: '12px 16px',
+                      fontSize: 12,
+                      color: 'var(--text-muted)',
+                      borderBottom: '1px solid var(--border-soft)',
+                    }}
+                  >
+                    {user?.email}
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false)
+                      navigate(user?.role === 'employee' ? '/employee/settings' : '/admin/settings')
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: 'none',
+                      border: 'none',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      fontSize: 13,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      color: 'var(--text-main)',
+                    }}
+                  >
+                    <SettingsIcon width={16} height={16} />
+                    Settings
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: 'none',
+                      border: 'none',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      fontSize: 13,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      color: '#e11d48',
+                    }}
+                  >
+                    <LogOutIcon width={16} height={16} />
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>

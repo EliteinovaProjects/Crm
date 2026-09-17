@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext'
 import { UserIcon, LockIcon, EyeIcon } from '../components/icons'
 
 export function Login() {
-  const [tab, setTab] = useState<'admin' | 'agent'>('admin')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -14,7 +13,12 @@ export function Login() {
   const navigate = useNavigate()
 
   if (user) {
-    navigate(user.role === 'employee' ? '/employee/dashboard' : '/admin/dashboard', { replace: true })
+    // Redirect based on actual user role from backend
+    if (user.role === 'employee') {
+      navigate('/employee/dashboard', { replace: true })
+    } else {
+      navigate('/admin/dashboard', { replace: true })
+    }
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -23,6 +27,7 @@ export function Login() {
     setSubmitting(true)
     try {
       await login(username, password)
+      // After successful login, the useEffect will handle redirection based on role
     } catch {
       setError('Invalid username or password')
     } finally {
@@ -129,27 +134,13 @@ export function Login() {
             Sign in to your account to continue
           </p>
 
-          <div style={{ display: 'flex', gap: 24, marginBottom: 24, borderBottom: '1px solid var(--border-soft)' }}>
-            {(['admin', 'agent'] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTab(t)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: '0 0 10px',
-                  fontSize: 15,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  color: tab === t ? '#ec4899' : 'var(--text-muted)',
-                  borderBottom: tab === t ? '2px solid #ec4899' : '2px solid transparent',
-                  textTransform: 'capitalize',
-                }}
-              >
-                {t}
-              </button>
-            ))}
+          <div style={{ marginBottom: 20, padding: '12px', background: '#f8f4fc', borderRadius: 8, fontSize: 12, color: '#6b5b7a' }}>
+            <strong>Access includes:</strong>
+            <div style={{ marginTop: 4 }}>
+              • LMS (Learning Management System)
+              <br />
+              • CMS (Context Management System)
+            </div>
           </div>
 
           <form onSubmit={handleSubmit}>

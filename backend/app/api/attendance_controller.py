@@ -34,6 +34,123 @@ def check_in(
         )
 
 
+@router.post("/quick-check-in")
+def quick_check_in(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Quick check in for work (simplified version for header button)"""
+    from datetime import datetime
+    
+    if current_user.current_status == "online":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Already checked in"
+        )
+    
+    current_user.current_status = "online"
+    current_user.last_check_in = datetime.utcnow()
+    current_user.is_on_break = False
+    current_user.updated_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(current_user)
+    
+    return {
+        "status": current_user.current_status,
+        "last_check_in": current_user.last_check_in.isoformat(),
+        "message": "Checked in successfully"
+    }
+
+
+@router.post("/quick-check-out")
+def quick_check_out(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Quick check out from work (simplified version for header button)"""
+    from datetime import datetime
+    
+    if current_user.current_status == "offline":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Already checked out"
+        )
+    
+    current_user.current_status = "offline"
+    current_user.last_check_out = datetime.utcnow()
+    current_user.is_on_break = False
+    current_user.updated_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(current_user)
+    
+    return {
+        "status": current_user.current_status,
+        "last_check_out": current_user.last_check_out.isoformat(),
+        "message": "Checked out successfully"
+    }
+
+
+@router.post("/quick-break-start")
+def quick_break_start(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Quick start break (simplified version for header button)"""
+    from datetime import datetime
+    
+    if current_user.is_on_break:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Already on break"
+        )
+    
+    current_user.is_on_break = True
+    current_user.break_start_time = datetime.utcnow()
+    current_user.current_status = "on_break"
+    current_user.updated_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(current_user)
+    
+    return {
+        "status": current_user.current_status,
+        "is_on_break": current_user.is_on_break,
+        "break_start_time": current_user.break_start_time.isoformat(),
+        "message": "Break started successfully"
+    }
+
+
+@router.post("/quick-break-end")
+def quick_break_end(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Quick end break (simplified version for header button)"""
+    from datetime import datetime
+    
+    if not current_user.is_on_break:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Not currently on break"
+        )
+    
+    current_user.is_on_break = False
+    current_user.break_start_time = None
+    current_user.current_status = "online"
+    current_user.updated_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(current_user)
+    
+    return {
+        "status": current_user.current_status,
+        "is_on_break": current_user.is_on_break,
+        "message": "Break ended successfully"
+    }
+
+
 @router.post("/check-out")
 def check_out(
     notes: str = None,
@@ -253,3 +370,46 @@ def get_today_attendance_summary(
     attendance_service = AttendanceService(db)
     summary = attendance_service.get_today_attendance_summary(current_user.id)
     return summary
+
+
+@router.put("/status")
+def update_user_status(
+    status: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Update user's current status (online, offline, on_break, ready_for_calls)"""
+    from datetime import datetime
+    
+    valid_statuses = ["online", "offline", "on_break", "ready_for_calls"]
+    if status not in valid_statuses:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
+        )
+    
+    current_user.current_status = status
+    
+    if status == "online":
+        current_user.last_check_in = datetime.utcnow()
+        current_user.is_on_break = False
+    elif status == "offline":
+        current_user.last_check_out = datetime.utcnow()
+        current_user.is_on_break = False
+    elif status == "on_break":
+        current_user.is_on_break = True
+        current_user.break_start_time = datetime.utcnow()
+    elif status == "ready_for_calls":
+        current_user.is_on_break = False
+    
+    current_user.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(current_user)
+    
+    return {
+        "status": current_user.current_status,
+        "last_check_in": current_user.last_check_in.isoformat() if current_user.last_check_in else None,
+        "last_check_out": current_user.last_check_out.isoformat() if current_user.last_check_out else None,
+        "is_on_break": current_user.is_on_break,
+        "break_start_time": current_user.break_start_time.isoformat() if current_user.break_start_time else None
+    }

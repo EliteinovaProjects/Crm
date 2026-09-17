@@ -10,6 +10,12 @@ export interface User {
   is_active: boolean
   created_at: string
   updated_at: string
+  // Attendance tracking fields
+  last_check_in?: string
+  last_check_out?: string
+  is_on_break?: boolean
+  break_start_time?: string
+  current_status?: string
 }
 
 export interface LoginResponse {

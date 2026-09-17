@@ -25,6 +25,13 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+    # Attendance tracking fields for employees
+    last_check_in = Column(DateTime, nullable=True)
+    last_check_out = Column(DateTime, nullable=True)
+    is_on_break = Column(Boolean, default=False)
+    break_start_time = Column(DateTime, nullable=True)
+    current_status = Column(String, default="offline")  # online, offline, on_break, ready_for_calls
+    
     # Relationships
     leads = relationship("Lead", back_populates="assigned_agent")
     attendance = relationship("Attendance", back_populates="user")
