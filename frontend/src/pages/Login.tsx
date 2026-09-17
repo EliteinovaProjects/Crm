@@ -252,14 +252,14 @@ export function Login() {
       </div>
 
       {portalMismatch && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.68)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20, padding: 20 }}>
-          <div role="dialog" aria-modal="true" style={{ width: '100%', maxWidth: 390, background: '#111a2e', color: '#fff', borderRadius: 16, borderTop: '4px solid #f59e0b', padding: 28, boxShadow: '0 24px 70px rgba(0,0,0,.35)', textAlign: 'center' }}>
-            <div style={{ width: 58, height: 58, margin: '0 auto 16px', borderRadius: 16, background: 'rgba(245,158,11,.12)', display: 'grid', placeItems: 'center', fontSize: 30 }}>⚠</div>
-            <h3 style={{ margin: '0 0 10px', fontSize: 20 }}>Wrong Login Portal</h3>
-            <p style={{ margin: '0 auto 20px', color: '#cbd5e1', lineHeight: 1.6, fontSize: 13 }}>{portalMismatch.message}</p>
-            <div style={{ textAlign: 'left', padding: 14, border: '1px solid rgba(245,158,11,.35)', borderRadius: 12, background: 'rgba(245,158,11,.08)', marginBottom: 16 }}><strong style={{ color: '#fbbf24', fontSize: 11 }}>RECOMMENDED</strong><div style={{ marginTop: 4, fontWeight: 700 }}>{portalMismatch.role === 'employee' ? 'Employee Login' : 'Admin Login'}</div></div>
-            <button onClick={() => { setLoginType(portalMismatch.role); setPortalMismatch(null); setError('') }} style={{ width: '100%', padding: 12, border: 0, borderRadius: 10, background: '#d8890b', color: '#fff', fontWeight: 700, cursor: 'pointer', marginBottom: 8 }}>Switch to {portalMismatch.role === 'employee' ? 'Employee' : 'Admin'} Login</button>
-            <button onClick={() => setPortalMismatch(null)} style={{ width: '100%', padding: 12, border: '1px solid #334155', borderRadius: 10, background: 'transparent', color: '#cbd5e1', fontWeight: 600, cursor: 'pointer' }}>Stay on Current Login</button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(74, 28, 92, 0.28)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20, padding: 20 }}>
+          <div role="dialog" aria-modal="true" style={{ width: '100%', maxWidth: 390, background: '#fff', color: '#302044', borderRadius: 20, borderTop: '4px solid #ec4899', padding: 28, boxShadow: '0 24px 70px rgba(168, 85, 247, 0.28)', textAlign: 'center' }}>
+            <div style={{ width: 58, height: 58, margin: '0 auto 16px', borderRadius: 16, background: 'linear-gradient(135deg, #fce7f3, #f3e8ff)', display: 'grid', placeItems: 'center', fontSize: 30, color: '#d946ef' }}>⚠</div>
+            <h3 style={{ margin: '0 0 10px', fontSize: 20, color: '#302044' }}>Wrong Login Portal</h3>
+            <p style={{ margin: '0 auto 20px', color: '#756681', lineHeight: 1.6, fontSize: 13 }}>{portalMismatch.message}</p>
+            <div style={{ textAlign: 'left', padding: 14, border: '1px solid #e9d5ff', borderRadius: 12, background: 'linear-gradient(135deg, #fff1f8, #faf5ff)', marginBottom: 16 }}><strong style={{ color: '#d946ef', fontSize: 11 }}>RECOMMENDED</strong><div style={{ marginTop: 4, fontWeight: 700, color: '#302044' }}>{portalMismatch.role === 'employee' ? 'Employee Login' : 'Admin Login'}</div></div>
+            <button onClick={() => { setLoginType(portalMismatch.role); setPortalMismatch(null); setError('') }} style={{ width: '100%', padding: 12, border: 0, borderRadius: 10, background: 'var(--brand-gradient)', color: '#fff', fontWeight: 700, cursor: 'pointer', marginBottom: 8, boxShadow: '0 6px 14px rgba(236, 72, 153, 0.22)' }}>Switch to {portalMismatch.role === 'employee' ? 'Employee' : 'Admin'} Login</button>
+            <button onClick={() => setPortalMismatch(null)} style={{ width: '100%', padding: 12, border: '1px solid #eadcf4', borderRadius: 10, background: '#fff', color: '#756681', fontWeight: 600, cursor: 'pointer' }}>Stay on Current Login</button>
           </div>
         </div>
       )}
