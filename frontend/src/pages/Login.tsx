@@ -50,7 +50,7 @@ export function Login() {
         padding: 24,
       }}
     >
-      <div
+      <div className="login-card"
         style={{
           display: 'flex',
           width: '100%',
@@ -132,7 +132,7 @@ export function Login() {
         </div>
 
         {/* Right form panel */}
-        <div style={{ flex: 1, padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div className="login-form-panel" style={{ flex: 1, padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <h2 style={{ margin: '0 0 4px', fontSize: 24 }}>Hey, welcome!</h2>
           <p style={{ margin: '0 0 18px', color: 'var(--text-muted)', fontSize: 14 }}>
             Sign in to your {loginType === 'admin' ? 'Admin' : 'Employee'} account to continue

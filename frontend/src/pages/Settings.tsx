@@ -41,8 +41,8 @@ export function Settings() {
   const base = location.pathname.split('/settings')[0] + '/settings'
   return <div>
     <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 20 }}>Settings</div>
-    <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-      <div style={{ width: 220, background: '#fff', borderRadius: 16, boxShadow: 'var(--shadow-card)', padding: 12, flexShrink: 0 }}>
+    <div className="settings-layout" style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+      <div className="settings-nav" style={{ width: 220, background: '#fff', borderRadius: 16, boxShadow: 'var(--shadow-card)', padding: 12, flexShrink: 0 }}>
         {links.map((link) => <Link key={link.path} to={`${base}/${link.path}`} style={{ display: 'block', padding: '10px 12px', borderRadius: 10, textDecoration: 'none', color: location.pathname.endsWith(link.path) ? '#ec4899' : 'var(--text-main)', background: location.pathname.endsWith(link.path) ? 'var(--brand-gradient-soft)' : 'transparent', fontSize: 13.5, fontWeight: 600, marginBottom: 4 }}>{link.label}</Link>)}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}><Routes>{links.map((link) => <Route key={link.path} path={link.path} element={<Content link={link} />} />)}<Route path="*" element={<Content link={links[0]} />} /></Routes></div>

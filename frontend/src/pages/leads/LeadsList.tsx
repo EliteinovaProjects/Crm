@@ -171,8 +171,8 @@ export function LeadsList() {
       {error && <div style={{ color: '#e11d48' }}>{error}</div>}
       {!data && !error && <div>Loading...</div>}
       {data && (
-        <div style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5 }}>
+        <div className="responsive-table" style={{ background: '#fff', borderRadius: 16, overflow: 'auto', boxShadow: 'var(--shadow-card)' }}>
+          <table style={{ width: '100%', minWidth: 760, borderCollapse: 'collapse', fontSize: 13.5 }}>
             <thead>
               <tr>
                 <th style={{ padding: '12px 14px', background: 'var(--brand-gradient-soft)', color: '#a855f7' }}></th>

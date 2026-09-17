@@ -10,6 +10,7 @@ import { EmployeeDashboard } from './pages/employee/EmployeeDashboard'
 import { LeadsList } from './pages/leads/LeadsList'
 import { LiveCalls } from './pages/calls/LiveCalls'
 import { ConfigurationPage } from './pages/ConfigurationPage'
+import { WorkspaceSection } from './pages/WorkspaceSection'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -44,9 +45,9 @@ export default function App() {
             <Route path="/admin/sms-templates" element={<ConfigurationPage kind="sms-templates" />} />
             <Route path="/admin/api-docs" element={<ConfigurationPage kind="api-docs" />} />
             <Route path="/admin/agents" element={<ConfigurationPage kind="agents" />} />
-            <Route path="/admin/toolbox/*" element={<Settings />} />
-            <Route path="/admin/c2c/*" element={<Settings />} />
-            <Route path="/admin/coins/*" element={<Settings />} />
+            <Route path="/admin/toolbox/*" element={<WorkspaceSection section="toolbox" />} />
+            <Route path="/admin/c2c/*" element={<WorkspaceSection section="c2c" />} />
+            <Route path="/admin/coins/*" element={<WorkspaceSection section="coin-admin" />} />
             <Route path="/admin/settings/*" element={<Settings />} />
           </Route>
 
@@ -62,9 +63,9 @@ export default function App() {
             <Route path="/employee/agents" element={<PagePlaceholder title="Agents" />} />
             <Route path="/employee/leads" element={<LeadsList />} />
             <Route path="/employee/reports" element={<PagePlaceholder title="Reports" />} />
-            <Route path="/employee/reminders/*" element={<Settings />} />
-            <Route path="/employee/campaign-base" element={<PagePlaceholder title="Campaign Base" />} />
-            <Route path="/employee/coins/*" element={<Settings />} />
+            <Route path="/employee/reminders/*" element={<WorkspaceSection section="reminders" />} />
+            <Route path="/employee/campaign-base" element={<WorkspaceSection section="campaign-base" />} />
+            <Route path="/employee/coins/*" element={<WorkspaceSection section="coins" />} />
             <Route path="/employee/settings/*" element={<Settings />} />
           </Route>
 

@@ -91,8 +91,8 @@ export function Layout() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside
+    <div className="app-shell" style={{ display: 'flex', minHeight: '100vh' }}>
+      <aside className="app-sidebar"
         style={{
           width: 96,
           background: '#fff',
@@ -151,8 +151,8 @@ export function Layout() {
         </nav>
       </aside>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <header
+      <div className="app-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        <header className="app-header"
           style={{
             height: 64,
             borderBottom: '1px solid var(--border-soft)',
@@ -244,7 +244,7 @@ export function Layout() {
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             <button
               onClick={() => navigate(liveCallsPath)}
               style={{
@@ -435,7 +435,7 @@ export function Layout() {
           </div>
         </header>
 
-        <main style={{ flex: 1, padding: 24, background: 'var(--bg-app)' }}>
+        <main className="app-content" style={{ flex: 1, padding: 24, background: 'var(--bg-app)', minWidth: 0 }}>
           <Outlet />
         </main>
       </div>
