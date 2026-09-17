@@ -41,9 +41,7 @@ export function Layout() {
     setUpdatingAttendance(true)
     try {
       await api.post('/attendance/quick-check-in')
-      // Refresh user data to get updated status
-      const response = await api.get('/auth/me')
-      // Update user in auth context (you might need to add a method to AuthContext for this)
+      // Reload the authenticated user so the header reflects the new status.
       window.location.reload()
     } catch (error) {
       console.error('Check-in failed:', error)

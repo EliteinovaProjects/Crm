@@ -13,12 +13,8 @@ export function Login() {
   const navigate = useNavigate()
 
   if (user) {
-    // Redirect based on actual user role from backend
-    if (user.role === 'employee') {
-      navigate('/employee/dashboard', { replace: true })
-    } else {
-      navigate('/admin/dashboard', { replace: true })
-    }
+    // Redirect based on the role returned by the backend.
+    navigate(user.role === 'employee' ? '/employee/dashboard' : '/admin/dashboard', { replace: true })
   }
 
   async function handleSubmit(e: FormEvent) {

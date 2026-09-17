@@ -22,7 +22,8 @@ from app.api import (
     coin_router,
     reminder_router,
     notification_router,
-    api_docs_router
+    api_docs_router,
+    attendance_router
 )
 
 # Schema is managed by Alembic migrations (see backend/alembic) - run
@@ -67,6 +68,7 @@ app.include_router(coin_router)
 app.include_router(reminder_router)
 app.include_router(notification_router)
 app.include_router(api_docs_router)
+app.include_router(attendance_router)
 
 
 @app.get("/")

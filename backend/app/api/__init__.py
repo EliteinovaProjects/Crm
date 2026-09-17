@@ -18,6 +18,7 @@ from app.api.coin_controller import router as coin_router
 from app.api.reminder_controller import router as reminder_router
 from app.api.notification_controller import router as notification_router
 from app.api.api_docs_controller import router as api_docs_router
+from app.api.attendance_controller import router as attendance_router
 
 __all__ = [
     "auth_router",
@@ -39,5 +40,6 @@ __all__ = [
     "coin_router",
     "reminder_router",
     "notification_router",
-    "api_docs_router"
+    "api_docs_router",
+    "attendance_router"
 ]
