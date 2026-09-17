@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { adminNav, employeeNav } from '../config/sidebar'
+import { adminLMSNav, adminCMSNav, employeeLMSNav, employeeCMSNav } from '../config/sidebar'
 import { BellIcon, PhoneIcon, UserIcon, LogOutIcon, SettingsIcon } from './icons'
 import { DialPad } from './DialPad'
 import { api } from '../services/api'
@@ -14,7 +14,9 @@ export function Layout() {
   const [updatingAttendance, setUpdatingAttendance] = useState(false)
   const profileMenuRef = useRef<HTMLDivElement>(null)
   const notificationRef = useRef<HTMLDivElement>(null)
-  const nav = user?.role === 'employee' ? employeeNav : adminNav
+  const isEmployee = user?.role === 'employee'
+  const lmsNav = isEmployee ? employeeLMSNav : adminLMSNav
+  const cmsNav = isEmployee ? employeeCMSNav : adminCMSNav
   const liveCallsPath = user?.role === 'employee' ? '/employee/live-calls' : '/admin/live-calls'
 
   // Close dropdowns when clicking outside
@@ -110,26 +112,43 @@ export function Layout() {
           E
         </div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-          {nav.map((item) => {
+          <div style={{ padding: '0 14px 4px', color: '#a09ab0', fontSize: 9, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase' }}>
+            LMS
+          </div>
+          {lmsNav.map((item) => {
             const Icon = item.icon
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 style={({ isActive }) => ({
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '10px 4px',
-                  margin: '0 10px',
-                  borderRadius: 12,
-                  textDecoration: 'none',
-                  color: isActive ? '#fff' : '#8b8ba7',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '10px 4px', margin: '0 10px', borderRadius: 12,
+                  textDecoration: 'none', color: isActive ? '#fff' : '#8b8ba7',
                   background: isActive ? 'var(--brand-gradient)' : 'transparent',
-                  fontSize: 10.5,
-                  fontWeight: 600,
-                  textAlign: 'center',
+                  fontSize: 10.5, fontWeight: 600, textAlign: 'center',
+                })}
+              >
+                <Icon width={19} height={19} />
+                <span>{item.label}</span>
+              </NavLink>
+            )
+          })}
+          <div style={{ padding: '10px 14px 4px', color: '#a09ab0', fontSize: 9, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase' }}>
+            CMS
+          </div>
+          {cmsNav.map((item) => {
+            const Icon = item.icon
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                style={({ isActive }) => ({
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '10px 4px', margin: '0 10px', borderRadius: 12,
+                  textDecoration: 'none', color: isActive ? '#fff' : '#8b8ba7',
+                  background: isActive ? 'var(--brand-gradient)' : 'transparent',
+                  fontSize: 10.5, fontWeight: 600, textAlign: 'center',
                 })}
               >
                 <Icon width={19} height={19} />

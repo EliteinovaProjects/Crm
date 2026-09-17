@@ -7,6 +7,7 @@ export function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [loginType, setLoginType] = useState<'admin' | 'employee'>('admin')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const { login, user } = useAuth()
@@ -23,9 +24,14 @@ export function Login() {
     setSubmitting(true)
     try {
       await login(username, password)
-      // After successful login, the useEffect will handle redirection based on role
-    } catch {
-      setError('Invalid username or password')
+      // The redirect is based on the role returned by the backend.
+    } catch (err: any) {
+      const returnedRole = err?.response?.data?.user?.role
+      if (returnedRole && returnedRole !== loginType) {
+        setError(`These credentials belong to the ${returnedRole === 'employee' ? 'Employee' : 'Admin'} login.`)
+      } else {
+        setError('Invalid username or password')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -126,9 +132,35 @@ export function Login() {
         {/* Right form panel */}
         <div style={{ flex: 1, padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <h2 style={{ margin: '0 0 4px', fontSize: 24 }}>Hey, welcome!</h2>
-          <p style={{ margin: '0 0 24px', color: 'var(--text-muted)', fontSize: 14 }}>
-            Sign in to your account to continue
+          <p style={{ margin: '0 0 18px', color: 'var(--text-muted)', fontSize: 14 }}>
+            Sign in to your {loginType === 'admin' ? 'Admin' : 'Employee'} account to continue
           </p>
+
+          <div style={{ display: 'flex', gap: 8, marginBottom: 18, padding: 4, background: '#f8f4fc', borderRadius: 10 }}>
+            {(['admin', 'employee'] as const).map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => {
+                  setLoginType(type)
+                  setError('')
+                }}
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '9px 8px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  color: loginType === type ? '#fff' : '#6b5b7a',
+                  background: loginType === type ? 'var(--brand-gradient)' : 'transparent',
+                }}
+              >
+                {type === 'admin' ? 'Admin Login' : 'Employee Login'}
+              </button>
+            ))}
+          </div>
 
           <div style={{ marginBottom: 20, padding: '12px', background: '#f8f4fc', borderRadius: 8, fontSize: 12, color: '#6b5b7a' }}>
             <strong>Access includes:</strong>
